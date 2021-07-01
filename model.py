@@ -35,20 +35,10 @@ class model:
             print(f'iter: {i}, rmse: {rmse}')
 
     '''
-        X_data: data object in data.py
-        curr_time: print of the current time
-        print_node: Row to be printed
-        file_d: file descriptor to write results
+        curr_mat: the current input matrix
     '''
-    def run(self, X_data, curr_time, print_node, file_d):
-        outlier = np.matmul(self.P, self.Q.transpose()) - X_data.curr_mat
-        O_idx = np.absolute(outlier) < self.thre * X_data.compute_std()
+    def run(self, curr_mat):
+        outlier = np.matmul(self.P, self.Q.transpose()) - curr_mat
+        O_idx = np.absolute(outlier) < self.thre
         outlier[O_idx] = 0.
-        self.GD_single_step(X_data.curr_mat - outlier)
-        print_str = f'{curr_time}, '
-
-        X_tilde = np.matmul(self.P, self.Q.transpose())
-        for i in range(self.num_sensor):
-            print_str = print_str + f'{X_data.curr_mat[print_node, i]}, {X_tilde[print_node, i]},'
-        print_str = print_str + "\n"
-        file_d.write(print_str)
+        self.GD_single_step(curr_mat - outlier)

@@ -29,6 +29,7 @@ class data:
 
         self.avg_mat = self.avg_mat / self.window_len
         self.curr_mat = np.copy(self.curr_window[-1])
+        self.compute_std()
         #self.normalize_matrix()
 
     # Given a line idx, get the matrix for that line
@@ -54,18 +55,20 @@ class data:
         self.avg_mat = self.avg_mat + (in_mat - out_mat) / self.window_len
         self.sq_mat = self.sq_mat + np.square(in_mat) - np.square(out_mat)
         self.curr_mat = np.copy(in_mat)
-        self.normalize_matrix()
+        self.compute_std()
 
-    def normalize_matrix(self):
-        eps = 1e-7
-        temp = self.sq_mat / self.window_len - self.avg_mat * self.avg_mat
-        temp[temp < 0] = 0.
-        std_mat = np.sqrt(temp)
-        self.curr_mat =  (self.curr_mat - self.avg_mat) / (std_mat + eps)
-
+    # Save the std of the current matrix in 'self.std'
     def compute_std(self):
         temp = self.sq_mat / self.window_len - self.avg_mat * self.avg_mat
         temp[temp < 0] = 0.
-        std_mat = np.sqrt(temp)
-        std_mat[std_mat < 1e-3] = 1
-        return std_mat
+        self.std_mat = np.sqrt(temp)
+
+    # Normalize the current matrix with the average and the standard deviation
+    def normalize_matrix(self, input_mat):
+        eps = 1e-7
+        return (input_mat - self.avg_mat) / (self.std_mat + eps)
+
+    # Denormalize the current matrix with the average and the std
+    def denormalize_matrix(self, input_mat):
+        eps = 1e-7
+        return input_mat * (self.std_mat + eps) + self.avg_mat

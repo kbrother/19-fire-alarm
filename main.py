@@ -11,7 +11,8 @@ def raw_data_callback(client, userdata, msg):
     # matrix_list = json_parser(msg.payload)
     # udpate the stat
     # make new json
-    message_info = client.publish("/eag/cfd/preprocess", payload=msg)
+    print("end")
+    #message_info = client.publish("/eag/cfd/preprocess", payload=msg)
 
 def main(host, port):
     client = mqtt.Client()
