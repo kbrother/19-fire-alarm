@@ -1,7 +1,7 @@
 '''
     Code that print the one day result
 '''
-from data import data
+from data_test import data
 from model import model
 from tqdm import tqdm
 import numpy as np

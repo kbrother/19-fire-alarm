@@ -1,56 +1,55 @@
 import numpy as np
 class data:
     '''
-        Save only vital parameter
+        file_name: data file
         num_node: the number of row
         num_sensor: the number of column
-        window_len: the length of window
     '''
-    def __init__(self, num_node, num_sensor, window_len):
+    def __init__(self, file_name, num_node, num_sensor, window_len):
+        # Read lines from the file
+        with open(file_name) as f:
+            self.lines = f.read().split("\n")
+
         self.num_sensor = num_sensor
+        self.curr_line = 1 + num_node * (window_len - 1)
         self.window_len = window_len
         self.num_node = num_node
+        self.num_line = len(self.lines) - 1
 
         # Initialize window
         # The last entry of the window is set to the current matrix
         self.curr_window = []
         self.avg_mat = np.zeros((self.num_node, self.num_sensor))
         self.sq_mat = np.zeros((self.num_node, self.num_sensor))
+        for i in range(1, 1 + self.window_len*self.num_node, self.num_node):
+            curr_mat = self.extract_matrix(i)
+            self.curr_window.append(curr_mat)
+            self.avg_mat = self.avg_mat + curr_mat
+            self.sq_mat = self.sq_mat + curr_mat * curr_mat
 
-    # Append a single matrix to json
-    def build_window(self, json_dict):
-        curr_mat = self.parse_json(json_dict)
-        self.curr_window.append(curr_mat)
-        self.avg_mat = self.avg_mat + curr_mat
-        self.sq_mat = self.sq_mat + curr_mat * curr_mat
+        self.avg_mat = self.avg_mat / self.window_len
+        self.curr_mat = np.copy(self.curr_window[-1])
+        self.compute_std()
+        #self.normalize_matrix()
 
-        if len(self.curr_window) == self.window_len:
-            self.avg_mat = self.avg_mat / self.window_len
-            self.curr_mat = np.copy(self.curr_window[-1])
-            self.compute_std()
+    # Given a line idx, get the matrix for that line
+    def extract_matrix(self, line_idx):
+        curr_matrix = np.ndarray(shape=(self.num_node, self.num_sensor))
+        for i in range(line_idx, self.num_node + line_idx):
+            words = self.lines[i].split(",")
+            if len(words) < 2 + self.num_sensor:
+                print(line_idx)
+            for j in range(2, 2 + self.num_sensor):
+                curr_matrix[i-line_idx, j-2] = words[j]
 
-    # Extract a single matrix from json input
-    def parse_json(self, json_dict):
-        num_node = len(json_dict["id"])
-        curr_mat = np.zeros((self.num_node, self.num_sensor))
-        # Set the first column
-        for i in range(num_node):
-            curr_mat[i, 0] = json_dict["temp"][i]
-        for i in range(num_node):
-            curr_mat[i, 1] = json_dict["pm2"][i]
-        for i in range(num_node):
-            curr_mat[i, 2] = json_dict["pm10"][i]
-        for i in range(num_node):
-            curr_mat[i, 3] = json_dict["co2"][i]
-        for i in range(num_node):
-            curr_mat[i, 4] = json_dict["co"][i]
-        return curr_mat
+        return curr_matrix
 
     # Move the window by a single matrix
     # Get the matrix of average and std
-    def update_window(self, json_dict):
+    def update_window(self):
+        self.curr_line += self.num_node
         out_mat = self.curr_window.pop(0)
-        in_mat = self.parse_json(json_dict)
+        in_mat = self.extract_matrix(self.curr_line)
         self.curr_window.append(in_mat)
 
         self.avg_mat = self.avg_mat + (in_mat - out_mat) / self.window_len
