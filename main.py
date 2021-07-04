@@ -13,6 +13,8 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback function for when a PUBLISH message is received from the server
 def raw_data_callback(client, userdata, msg):
+    print(msg.payload)
+    '''
     curr_dict = json.loads(msg.payload)
     for i in range(len(curr_dict["cfd"])):
         if curr_idx < window_len:
@@ -27,6 +29,7 @@ def raw_data_callback(client, userdata, msg):
             X_tilde = data_stream_list[i].denormalize_matrix(np.matmul(mat_model_list[i].P, mat_model_list[i].Q.transpose()))
 
     curr_idx += 1
+    '''
     # matrix_list = json_parser(msg.payload)
     # udpate the stat
     # make new json
@@ -35,7 +38,7 @@ def raw_data_callback(client, userdata, msg):
 def main(host, port):
     client = mqtt.Client()
     client.on_connect = on_connect
-    client.message_callback_add("eag/cfd", raw_data_callback)
+    client.message_callback_add("/eag/cfd", raw_data_callback)
     client.connect(host, port)
 
     # Blocking call that processes network traffic, dispatches callbacks and handles reconnecting.
@@ -46,16 +49,15 @@ def main(host, port):
 '''
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--host', type=str, help='host name')
-    parser.add_argument('--port', type=int, help='port')
-    parser.add_argument('--window-len', type=int, help='the length of window')
-    parser.add_argument('--num-node', type=int, help="the number of node")
-    parser.add_argument('--num-sensor', type=int, help="the number of sensor")
-    parser.add_argument('--num-channel', type=int, help="the number of channel")
+    parser.add_argument('--host', type=str, default='127.0.0.1', help='host name')
+    parser.add_argument('--port', type=int, default=1883, help='port')
+    parser.add_argument('--window-len', type=int, default=15, help='the length ofi window')
+    parser.add_argument('--num-node', type=int, default=2, help="the number of node")
+    parser.add_argument('--num-sensor', type=int, default=7, help="the number of sensor")
+    parser.add_argument('--num-channel', type=int, default=1, help="the number of channel")
     args = parser.parse_args()
 
     curr_idx = 0
-    window_len = int(sys.argv[3])
     mat_model_list = [model(args.num_node, args.num_sensor, 5, 1e7, 1e-4) for _ in range(args.num_channel)]
     data_stream_list = [data(args.num_node, args.num_sensor, args.window_len) for _ in range(args.window_len)]
-    main(sys.argv[1], int(sys.argv[2]))
+    main(args.host, args.port)
