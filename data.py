@@ -37,13 +37,17 @@ class data:
         for i in range(num_node):
             curr_mat[i, 0] = json_dict["temp"][i]
         for i in range(num_node):
-            curr_mat[i, 1] = json_dict["pm2"][i]
+            curr_mat[i, 1] = json_dict["humid"][i]
         for i in range(num_node):
-            curr_mat[i, 2] = json_dict["pm10"][i]
+            curr_mat[i, 2] = json_dict["pm1_0"][i]
         for i in range(num_node):
-            curr_mat[i, 3] = json_dict["co2"][i]
+            curr_mat[i, 3] = json_dict["pm2_5"][i]
         for i in range(num_node):
-            curr_mat[i, 4] = json_dict["co"][i]
+            curr_mat[i, 4] = json_dict["pm10"][i]
+        for i in range(num_node):
+            curr_mat[i, 5] = json_dict["co2"][i]
+        for i in range(num_node):
+            curr_mat[i, 6] = json_dict["co"][i]
         return curr_mat
 
     # Move the window by a single matrix
