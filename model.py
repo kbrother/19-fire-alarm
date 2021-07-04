@@ -32,7 +32,7 @@ class model:
             self.GD_single_step(target_X)
             X_diff = target_X - np.matmul(self.P, self.Q.transpose())
             rmse = np.sqrt(np.sum(X_diff * X_diff) / self.num_node / self.num_sensor)
-            print(f'iter: {i}, rmse: {rmse}')
+            #print(f'iter: {i}, rmse: {rmse}')
 
     '''
         curr_mat: the current input matrix

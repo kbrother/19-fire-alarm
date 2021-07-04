@@ -14,7 +14,6 @@ def on_connect(client, userdata, flags, rc):
 # The callback function for when a PUBLISH message is received from the server
 def raw_data_callback(client, userdata, msg):
     print(msg.payload)
-    '''
     curr_dict = json.loads(msg.payload)
     for i in range(len(curr_dict["cfd"])):
         if curr_idx < window_len:
@@ -29,7 +28,6 @@ def raw_data_callback(client, userdata, msg):
             X_tilde = data_stream_list[i].denormalize_matrix(np.matmul(mat_model_list[i].P, mat_model_list[i].Q.transpose()))
 
     curr_idx += 1
-    '''
     # matrix_list = json_parser(msg.payload)
     # udpate the stat
     # make new json
