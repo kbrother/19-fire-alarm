@@ -15,32 +15,33 @@ def on_connect(client, userdata, flags, rc):
 def raw_data_callback(client, userdata, msg):
     print(msg.payload)
     curr_dict = json.loads(msg.payload)
-    if curr_idx % 3 == 0:
+    if userdata['curr_idx'] % 3 == 0:
         for i in range(len(curr_dict["cfd"]) - 1):
-            if curr_idx < window_len:
-                data_stream_list[i].build_window(curr_dict)
-                if curr_idx == window_len-1:
-                    normed_mat = data_stream_list[i].normalize_matrix(data_stream_list[i].curr_mat)
-                    mat_model_list[i].GD_initialize(normed_mat, 100)
+            if userdata['curr_idx'] < userdata['window_len']:
+                userdata['data_stream_list'][i].build_window(curr_dict)
+                if userdata['curr_idx'] == userdata['window_len']-1:
+                    normed_mat = userdata['data_stream_list'][i].normalize_matrix(userdata['data_stream_list'][i].curr_mat)
+                    userdata['mat_model_list'][i].GD_initialize(normed_mat, 100)
             else:
-                data_stream_list[i].update_window(curr_dict)
-                normed_mat = data_stream_list[i].normalize_matrix(data_stream_list[i].curr_mat)
-                mat_model_list[i].run(normed_mat)
-                X_tilde = data_stream_list[i].denormalize_matrix(np.matmul(mat_model_list[i].P, mat_model_list[i].Q.transpose()))
+                userdata['data_stream_list'][i].update_window(curr_dict)
+                normed_mat = userdata['data_stream_list'][i].normalize_matrix(userdata['data_stream_list'][i].curr_mat)
+                userdata['mat_model_list'][i].run(normed_mat)
+                X_tilde = userdata['data_stream_list'][i].denormalize_matrix(np.matmul(userdata['mat_model_list'][i].P, userdata['mat_model_list'][i].Q.transpose()))
 
-                print_str = f'{curr_time}, '
-                for i in range(mat_model_list[i].num_sensor):
-                    print_str = print_str + f'{data_stream_list[i].curr_mat[print_node, i]}, {X_tilde[print_node, i]},'
+                print_str = f'{userdata["curr_time"]}, '
+                for i in range(userdata['mat_model_list'][i].num_sensor):
+                    print_str = print_str + f'{userdata["data_stream_list"][i].curr_mat[userdata["print_node"], i]}, {X_tilde[userdata["print_node"], i]},'
                 print_str = print_str + "\n"
 
-    curr_idx += 1
+    userdata["curr_idx"] += 1
+    client.user_data_set(userdata)
     # matrix_list = json_parser(msg.payload)
     # udpate the stat
     # make new json
     #message_info = client.publish("/eag/cfd/preprocess", payload=msg)
 
-def main(host, port):
-    client = mqtt.Client()
+def main(host, port, user_data):
+    client = mqtt.Client(userdata=user_data)
     client.on_connect = on_connect
     client.message_callback_add("/eag/cfd", raw_data_callback)
     client.connect(host, port)
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     parser.add_argument('--num-channel', type=int, default=1, help="the number of channel")
     args = parser.parse_args()
 
-    curr_idx, print_node = 0, 0
-    mat_model_list = [model(args.num_node, args.num_sensor, 5, 1e7, 1e-4) for _ in range(args.num_channel)]
-    data_stream_list = [data(args.num_node, args.num_sensor, args.window_len) for _ in range(args.window_len)]
-    main(args.host, args.port)
+    user_data = {'curr_+idx': 0, 'print_node': 0}
+    user_data['mat_model_list'] = [model(args.num_node, args.num_sensor, 5, 1e7, 1e-4) for _ in range(args.num_channel)]
+    user_data['data_stream_list'] = [data(args.num_node, args.num_sensor, args.window_len) for _ in range(args.window_len)]
+    main(args.host, args.port, user_data)
