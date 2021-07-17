@@ -41,4 +41,4 @@ class model:
         outlier = np.matmul(self.P, self.Q.transpose()) - curr_mat
         O_idx = np.absolute(outlier) < self.thre
         outlier[O_idx] = 0.
-        self.GD_single_step(curr_mat - outlier)
+        self.GD_single_step(curr_mat + outlier)
