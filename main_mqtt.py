@@ -8,14 +8,15 @@ import numpy as np
 
 # The callback function of connection
 def on_connect(client, userdata, flags, rc):
-    print(f"connected wit result code {rc}")
+    if rc == 0:
+        print(f"connection success")
     client.subscribe("/eag/cfd")
 
 # The callback function for when a PUBLISH message is received from the server
 def raw_data_callback(client, userdata, msg):
    # print(msg.payload)
     curr_dict = json.loads(msg.payload)
-    print(f'{user_data["curr_idx"]} start')
+#    print(f'{user_data["curr_idx"]} start')
     if userdata['curr_idx'] % 3 == 0:
         for i in range(len(curr_dict["cfd"]) - 1):
             if userdata['curr_idx']/3 < userdata['window_len']:
@@ -29,14 +30,23 @@ def raw_data_callback(client, userdata, msg):
                 userdata['mat_model_list'][i].run(normed_mat)
                 X_tilde = userdata['data_stream_list'][i].denormalize_matrix(np.matmul(userdata['mat_model_list'][i].P, userdata['mat_model_list'][i].Q.transpose()))
 
-                print_str = f'{userdata["curr_idx"]}, '
+                print_str = f''
                 for j in range(userdata['mat_model_list'][i].num_sensor):
                     print_str = print_str + f'real data: {userdata["data_stream_list"][i].curr_mat[userdata["print_node"], j]}, our data: {X_tilde[userdata["print_node"], j]},\t'
                 print(print_str)
 
+    if userdata["curr_idx"] == 0:
+        print('intialization start')
+ 
+    if userdata["curr_idx"] % 3 == 0:
+        if userdata['curr_idx']/3 == userdata['window_len']-1:
+            print(f'{user_data["curr_idx"] + 1} seconds passed')
+            print(f'initialization finished\n')
+        else:            
+            print(f'{user_data["curr_idx"] + 1} seconds passed\n')
+    
     userdata["curr_idx"] += 1
     client.user_data_set(userdata)
-    print(f'{user_data["curr_idx"] - 1} end')
     # matrix_list = json_parser(msg.payload)
     # udpate the stat
     # make new json
