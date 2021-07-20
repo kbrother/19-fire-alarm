@@ -22,7 +22,7 @@ def raw_data_callback(client, userdata, msg):
         template_dict = {"ch": 0, "id": [], "temp": [], "hum": [], "pm1": [],
                          "pm2": [], "pm10": [], "co2": [], "co": [],
                          "err": [], "sw_v": [], "tm": []}
-        for i in range(len(curr_dict["cfd"]) - 1):
+        for i in range(len(curr_dict["cfd"]) - 1):                   
             curr_template = template_dict.copy()
             if userdata['curr_idx']/3 < userdata['window_len']:
                 userdata['data_stream_list'][i].build_window(curr_dict["cfd"][i])
@@ -36,7 +36,7 @@ def raw_data_callback(client, userdata, msg):
                 X_tilde = userdata['data_stream_list'][i].denormalize_matrix(np.matmul(userdata['mat_model_list'][i].P, userdata['mat_model_list'][i].Q.transpose()))
                 curr_template["ch"] = i + 1
 
-                num_id = len(curr_dict["cfd"]["i"]["id"])
+                num_id = len(curr_dict["cfd"][i]["id"])
                 curr_template["ch"] = i + 1
                 for j in range(num_id):
                     curr_template["id"].append(j + 1)
@@ -53,13 +53,15 @@ def raw_data_callback(client, userdata, msg):
                 curr_template["tm"] = curr_dict["cfd"][i]["tm"].copy()
 
                 output_dict["cfd"].append(curr_template)
-                '''
+            
+            print(template_dict)
+            '''
                 print_str = f''
                 for j in range(userdata['mat_model_list'][i].num_sensor):
                     print_str = print_str + f'real data: {userdata["data_stream_list"][i].curr_mat[userdata["print_node"], j]}, our data: {X_tilde[userdata["print_node"], j]},\t'
                 print(print_str)
         
-                '''
+            '''
         template_dict["ch"] = len(curr_dict["cfd"])
         output_dict["cfd"].append(template_dict.copy())
 
@@ -74,7 +76,7 @@ def raw_data_callback(client, userdata, msg):
         else:
             output_json = json.dumps(output_dict)
             client.publish("/eag/preprocess", json.dumps(output_dict))
-        print(output_json)
+#        print(output_json)
         client.publish("/eag/preprocess", output_json)
 
         if userdata['curr_idx']/3 == userdata['window_len']-1:
