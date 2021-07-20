@@ -21,6 +21,7 @@ class data:
         self.curr_window = []
         self.avg_mat = np.zeros((self.num_node, self.num_sensor))
         self.sq_mat = np.zeros((self.num_node, self.num_sensor))
+        self.first_line = self.lines[0]
         for i in range(1, 1 + self.window_len*self.num_node, self.num_node):
             curr_mat = self.extract_matrix(i)
             self.curr_window.append(curr_mat)
@@ -38,7 +39,7 @@ class data:
         for i in range(line_idx, self.num_node + line_idx):
             words = self.lines[i].split(",")
             if i == line_idx: self.curr_date = words[-1]
-            if len(words) < 2 + self.num_sensor:
+            if len(words) < 3 + self.num_sensor:
                 print(line_idx)
             for j in range(2, 2 + self.num_sensor):
                 curr_matrix[i-line_idx, j-2] = words[j]

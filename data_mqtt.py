@@ -37,11 +37,11 @@ class data:
         for i in range(num_node):
             curr_mat[i, 0] = json_dict["temp"][i]
         for i in range(num_node):
-            curr_mat[i, 1] = json_dict["humid"][i]
+            curr_mat[i, 1] = json_dict["hum"][i]
         for i in range(num_node):
-            curr_mat[i, 2] = json_dict["pm1_0"][i]
+            curr_mat[i, 2] = json_dict["pm1"][i]
         for i in range(num_node):
-            curr_mat[i, 3] = json_dict["pm2_5"][i]
+            curr_mat[i, 3] = json_dict["pm2"][i]
         for i in range(num_node):
             curr_mat[i, 4] = json_dict["pm10"][i]
         for i in range(num_node):
