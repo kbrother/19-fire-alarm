@@ -58,7 +58,7 @@ def raw_data_callback(client, userdata, msg):
                 print(print_str)
         
             '''
-        output_dict["cfd"].append(curr_template = {"ch": len(curr_dict["cfd"]), "id": [], "temp": [], "hum": [], "pm1": [],
+        output_dict["cfd"].append({"ch": len(curr_dict["cfd"]), "id": [], "temp": [], "hum": [], "pm1": [],
                          "pm2": [], "pm10": [], "co2": [], "co": [],
                          "err": [], "sw_v": [], "tm": []})
 
@@ -73,7 +73,7 @@ def raw_data_callback(client, userdata, msg):
         else:
             output_json = json.dumps(output_dict)
             client.publish("/eag/preprocess", json.dumps(output_dict))
-#        print(output_json)
+        print(output_json)
         client.publish("/eag/preprocess", output_json)
 
         if userdata['curr_idx']/3 == userdata['window_len']-1:
