@@ -31,22 +31,21 @@ class data:
 
     # Extract a single matrix from json input
     def parse_json(self, json_dict):
-        num_node = len(json_dict["id"])
         curr_mat = np.zeros((self.num_node, self.num_sensor))
         # Set the first column
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 0] = json_dict["temp"][i]
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 1] = json_dict["hum"][i]
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 2] = json_dict["pm1"][i]
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 3] = json_dict["pm2"][i]
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 4] = json_dict["pm10"][i]
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 5] = json_dict["co2"][i]
-        for i in range(num_node):
+        for i in range(self.num_node):
             curr_mat[i, 6] = json_dict["co"][i]
         return curr_mat
 
