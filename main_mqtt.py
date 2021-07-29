@@ -35,7 +35,7 @@ def raw_data_callback(client, userdata, msg):
                 X_tilde = userdata['data_stream_list'][i].denormalize_matrix(np.matmul(userdata['mat_model_list'][i].P, userdata['mat_model_list'][i].Q.transpose()))
 
                 num_id = len(curr_dict["cfd"][i]["id"])
-                for j in range(num_id - 1):
+                for j in range(num_id):
                     curr_template["id"].append(j + 1)
                     curr_template["temp"].append(X_tilde[j, 0])
                     curr_template["hum"].append(X_tilde[j, 1])
@@ -104,12 +104,12 @@ if __name__ == "__main__":
     parser.add_argument('--host', type=str, default='127.0.0.1', help='host name')
     parser.add_argument('--port', type=int, default=1883, help='port')
     parser.add_argument('--window-len', type=int, default=5, help='the length of window')
-    parser.add_argument('--num-node', type=int, default=2, help="the number of node")
+    parser.add_argument('--num-node', nargs='+', required=True, help="the number of node")
     parser.add_argument('--num-sensor', type=int, default=7, help="the number of sensor")
     parser.add_argument('--num-channel', type=int, default=1, help="the number of channel")
     args = parser.parse_args()
 
-    user_data = {'curr_idx': 0, 'print_node': 0, 'window_len': args.window_len}
-    user_data['mat_model_list'] = [model(args.num_node, args.num_sensor, 2, 1e7, 1e-4) for _ in range(args.num_channel)]
-    user_data['data_stream_list'] = [data(args.num_node, args.num_sensor, args.window_len) for _ in range(args.num_channel)]
+    user_data = {'curr_idx': 0, 'window_len': args.window_len}
+    user_data['mat_model_list'] = [model(int(args.num_node[i]), args.num_sensor, 2, 1e7, 1e-4) for i in range(args.num_channel)]
+    user_data['data_stream_list'] = [data(int(args.num_node[i]), args.num_sensor, args.window_len) for i in range(args.num_channel)]
     main(args.host, args.port, user_data)
