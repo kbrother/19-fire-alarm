@@ -19,7 +19,7 @@ def raw_data_callback(client, userdata, msg):
 #    print(f'{user_data["curr_idx"]} start'
     output_dict = {"cfd": []}
     if userdata['curr_idx'] % 3 == 0:
-        for i in range(len(curr_dict["cfd"]) - 1):                   
+        for i in range(len(curr_dict["cfd"])):
             curr_template = {"ch": i + 1, "id": [], "temp": [], "hum": [], "pm1": [],
                          "pm2": [], "pm10": [], "co2": [], "co": [],
                          "err": [], "sw_v": [], "tm": []}
@@ -58,9 +58,6 @@ def raw_data_callback(client, userdata, msg):
                 print(print_str)
         
             '''
-        output_dict["cfd"].append({"ch": len(curr_dict["cfd"]), "id": [], "temp": [], "hum": [], "pm1": [],
-                         "pm2": [], "pm10": [], "co2": [], "co": [],
-                         "err": [], "sw_v": [], "tm": []})
 
     if userdata["curr_idx"] == 0:
         print('intialization start')
