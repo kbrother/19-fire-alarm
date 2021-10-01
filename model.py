@@ -17,7 +17,7 @@ class model:
         X_diff = target_X - np.matmul(self.P, self.Q.transpose())
         # Update P
         for i in range(self.num_node):
-            temp = X_diff[i, :] * self.Q.transpose() * omega_X[i, :]
+            temp = X_diff[i, :] * self.Q.transpose()
             temp = np.sum(temp, axis=1)
             self.P[i, :] = self.P[i, :] + self.lr * temp.transpose()
 
