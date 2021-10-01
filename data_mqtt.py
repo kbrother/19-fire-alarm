@@ -53,7 +53,7 @@ class data:
     # Get the matrix of average and std
     def update_window(self, X_refined):
         out_mat = self.curr_window.pop(0)
-        self.curr_window.append(X_refined.copy())
+        self.curr_window.append(X_refined)
 
         self.avg_mat = self.avg_mat + (X_refined - out_mat) / self.window_len
         self.sq_mat = self.sq_mat + np.square(X_refined) - np.square(out_mat)
@@ -67,10 +67,16 @@ class data:
 
     # Normalize the current matrix with the average and the standard deviation
     def normalize_matrix(self, input_mat):
-        eps = 1e-3
-        return (input_mat - self.avg_mat) / (self.std_mat + eps)
+        _std_mat = self.std_mat.copy()
+        _std_mat[_std_mat < 0.05] = 0.05
+        return (input_mat - self.avg_mat) / _std_mat
 
     # Denormalize the current matrix with the average and the std
     def denormalize_matrix(self, input_mat):
-        eps = 1e-3
-        return input_mat * (self.std_mat + eps) + self.avg_mat
+        _std_mat = self.std_mat.copy()
+        _std_mat[_std_mat < 0.05] = 0.05
+        return input_mat * _std_mat + self.avg_mat
+
+    # Parse the current json and set it as the current matrix
+    def set_curr_mat(self, input_json):
+        self.curr_mat = self.parse_json(input_json)

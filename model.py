@@ -5,11 +5,12 @@ class model:
         num_sensor: the number of column
         Threshold for cutting the outlier
     '''
-    def __init__(self, num_node, num_sensor, rank, thre, lr):
+    def __init__(self, num_node, num_sensor, rank, thre, lr, gd_step):
         self.num_node, self.num_sensor = num_node, num_sensor
         self.rank, self.thre, self.lr = rank, thre, lr
         self.P = np.random.rand(num_node, rank)
         self.Q = np.random.rand(num_sensor, rank)
+        self.gd_step = gd_step
 
     # target_X should be values subtracted by outlier terms
     # omega_X is a matrix that indicates known entries
@@ -44,5 +45,7 @@ class model:
         O_idx = np.absolute(outlier) < self.thre
         outlier[O_idx] = 0.
         refined_mat = curr_mat - outlier
-        self.GD_single_step(refined_mat)
+
+        for i in range(self.gd_step):
+            self.GD_single_step(refined_mat)
         return refined_mat

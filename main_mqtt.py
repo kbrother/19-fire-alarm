@@ -26,13 +26,13 @@ def raw_data_callback(client, userdata, msg):
             if userdata['curr_idx']/3 < userdata['window_len']:
                 userdata['data_stream_list'][i].build_window(curr_dict["cfd"][i])
             else:
-                userdata['data_stream_list'][i].curr_mat = userdata['data_stream_list'][i].parse_json(curr_dict["cfd"][i])
+                userdata['data_stream_list'][i].set_curr_mat(curr_dict["cfd"][i])
                 normed_mat = userdata['data_stream_list'][i].normalize_matrix(userdata['data_stream_list'][i].curr_mat)
                 if userdata['curr_idx']/3 == userdata['window_len']:
                     userdata['mat_model_list'][i].GD_initialize(normed_mat, 100)
-                refined_mat = userdata['mat_model_list'][i].run(normed_mat)
+                normed_refined = userdata['mat_model_list'][i].run(normed_mat)
                 X_tilde = userdata['data_stream_list'][i].denormalize_matrix(np.matmul(userdata['mat_model_list'][i].P, userdata['mat_model_list'][i].Q.transpose()))
-                X_refined = userdata['data_stream_list'][i].denormalize_matrix(refined_mat)
+                X_refined = userdata['data_stream_list'][i].denormalize_matrix(normed_refined)
                 userdata['data_stream_list'][i].update_window(X_refined)
 
                 num_id = len(curr_dict["cfd"][i]["id"])
