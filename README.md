@@ -6,10 +6,10 @@ Python codes for the edge-gateway algorithm
 * numpy
 * paho-mqtt
 
-# Download
+## Download
 git clone https://github.com/kbrother/19-fire-alarm.git
 
-# Execution
+## Execution
 ```bash
 python main_mqtt.py [-h] [--host HOST] [--port PORT] [--window-len WINDOW_LEN]
                     --num-node NUM_NODE [NUM_NODE ...]
