@@ -12,11 +12,12 @@ class model:
         self.Q = np.random.rand(num_sensor, rank)
 
     # target_X should be values subtracted by outlier terms
-    def GD_single_step(self, target_X):
+    # omega_X is a matrix that indicates known entries
+    def GD_single_step(self, target_X, omega_X):
         X_diff = target_X - np.matmul(self.P, self.Q.transpose())
         # Update P
         for i in range(self.num_node):
-            temp = X_diff[i, :] * self.Q.transpose()
+            temp = X_diff[i, :] * self.Q.transpose() * omega_X[i, :]
             temp = np.sum(temp, axis=1)
             self.P[i, :] = self.P[i, :] + self.lr * temp.transpose()
 
@@ -35,10 +36,13 @@ class model:
             #print(f'iter: {i}, rmse: {rmse}')
 
     '''
+        Update the model
         curr_mat: the current input matrix
     '''
     def run(self, curr_mat):
-        outlier = np.matmul(self.P, self.Q.transpose()) - curr_mat
+        outlier = curr_mat - np.matmul(self.P, self.Q.transpose())
         O_idx = np.absolute(outlier) < self.thre
         outlier[O_idx] = 0.
-        self.GD_single_step(curr_mat + outlier)
+        refined_mat = curr_mat - outlier
+        self.GD_single_step(refined_mat)
+        return refined_mat

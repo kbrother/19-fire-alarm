@@ -29,7 +29,7 @@ class data:
             self.sq_mat = self.sq_mat + curr_mat * curr_mat
 
         self.avg_mat = self.avg_mat / self.window_len
-        self.curr_mat = np.copy(self.curr_window[-1])
+        self.curr_mat = self.extract_matrix(self.curr_line)
         self.compute_std()
         #self.normalize_matrix()
 
@@ -46,17 +46,20 @@ class data:
 
         return curr_matrix
 
+    # Update the current matrix
+    def update_mat(self):
+        self.curr_line += self.num_node
+        self.curr_mat = self.extract_matrix(self.curr_line)
+
     # Move the window by a single matrix
     # Get the matrix of average and std
     def update_window(self):
-        self.curr_line += self.num_node
         out_mat = self.curr_window.pop(0)
-        in_mat = self.extract_matrix(self.curr_line)
+        in_mat = self.curr_mat.copy()
         self.curr_window.append(in_mat)
 
         self.avg_mat = self.avg_mat + (in_mat - out_mat) / self.window_len
         self.sq_mat = self.sq_mat + np.square(in_mat) - np.square(out_mat)
-        self.curr_mat = np.copy(in_mat)
         self.compute_std()
 
     # Save the std of the current matrix in 'self.std'
