@@ -70,6 +70,7 @@ def raw_data_callback(client, userdata, msg):
         else:
             output_json = json.dumps(output_dict)
         print(output_json)
+        print(msg.payload)
         client.publish("/eag/preprocess", output_json)
 
         if userdata['curr_idx']/3 == userdata['window_len']-1:
@@ -108,6 +109,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     user_data = {'curr_idx': 0, 'window_len': args.window_len}
-    user_data['mat_model_list'] = [model(int(args.num_node[i]), args.num_sensor, 2, 1e7, 1e-4) for i in range(args.num_channel)]
+    user_data['mat_model_list'] = [model(int(args.num_node[i]), args.num_sensor, 2, 10, 1e-4) for i in range(args.num_channel)]
     user_data['data_stream_list'] = [data(int(args.num_node[i]), args.num_sensor, args.window_len) for i in range(args.num_channel)]
     main(args.host, args.port, user_data)
