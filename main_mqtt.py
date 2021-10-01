@@ -25,14 +25,15 @@ def raw_data_callback(client, userdata, msg):
                          "err": [], "sw_v": [], "tm": []}
             if userdata['curr_idx']/3 < userdata['window_len']:
                 userdata['data_stream_list'][i].build_window(curr_dict["cfd"][i])
-                if userdata['curr_idx']/3 == userdata['window_len']-1:
-                    normed_mat = userdata['data_stream_list'][i].normalize_matrix(userdata['data_stream_list'][i].curr_mat)
-                    userdata['mat_model_list'][i].GD_initialize(normed_mat, 100)
             else:
-                userdata['data_stream_list'][i].update_window(curr_dict["cfd"][i])
+                userdata['data_stream_list'][i].curr_mat = userdata['data_stream_list'][i].parse_json(curr_dict["cfd"][i])
                 normed_mat = userdata['data_stream_list'][i].normalize_matrix(userdata['data_stream_list'][i].curr_mat)
-                userdata['mat_model_list'][i].run(normed_mat)
+                if userdata['curr_idx']/3 == userdata['window_len']:
+                    userdata['mat_model_list'][i].GD_initialize(normed_mat, 100)
+                refined_mat = userdata['mat_model_list'][i].run(normed_mat)
                 X_tilde = userdata['data_stream_list'][i].denormalize_matrix(np.matmul(userdata['mat_model_list'][i].P, userdata['mat_model_list'][i].Q.transpose()))
+                X_refined = userdata['data_stream_list'][i].denormalize_matrix(refined_mat)
+                userdata['data_stream_list'][i].update_window(X_refined)
 
                 num_id = len(curr_dict["cfd"][i]["id"])
                 for j in range(num_id):

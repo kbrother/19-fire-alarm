@@ -26,7 +26,7 @@ class data:
 
         if len(self.curr_window) == self.window_len:
             self.avg_mat = self.avg_mat / self.window_len
-            self.curr_mat = np.copy(self.curr_window[-1])
+            #self.curr_mat = np.copy(self.curr_window[-1])
             self.compute_std()
 
     # Extract a single matrix from json input
@@ -51,14 +51,13 @@ class data:
 
     # Move the window by a single matrix
     # Get the matrix of average and std
-    def update_window(self, json_dict):
+    def update_window(self, X_refined):
         out_mat = self.curr_window.pop(0)
-        in_mat = self.parse_json(json_dict)
+        in_mat = self.curr_mat.copy()
         self.curr_window.append(in_mat)
 
         self.avg_mat = self.avg_mat + (in_mat - out_mat) / self.window_len
         self.sq_mat = self.sq_mat + np.square(in_mat) - np.square(out_mat)
-        self.curr_mat = np.copy(in_mat)
         self.compute_std()
 
     # Save the std of the current matrix in 'self.std'

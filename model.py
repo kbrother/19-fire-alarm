@@ -13,7 +13,7 @@ class model:
 
     # target_X should be values subtracted by outlier terms
     # omega_X is a matrix that indicates known entries
-    def GD_single_step(self, target_X, omega_X):
+    def GD_single_step(self, target_X):
         X_diff = target_X - np.matmul(self.P, self.Q.transpose())
         # Update P
         for i in range(self.num_node):
