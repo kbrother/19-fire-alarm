@@ -53,11 +53,10 @@ class data:
     # Get the matrix of average and std
     def update_window(self, X_refined):
         out_mat = self.curr_window.pop(0)
-        in_mat = self.curr_mat.copy()
-        self.curr_window.append(in_mat)
+        self.curr_window.append(X_refined.copy())
 
-        self.avg_mat = self.avg_mat + (in_mat - out_mat) / self.window_len
-        self.sq_mat = self.sq_mat + np.square(in_mat) - np.square(out_mat)
+        self.avg_mat = self.avg_mat + (X_refined - out_mat) / self.window_len
+        self.sq_mat = self.sq_mat + np.square(X_refined) - np.square(out_mat)
         self.compute_std()
 
     # Save the std of the current matrix in 'self.std'
@@ -68,10 +67,10 @@ class data:
 
     # Normalize the current matrix with the average and the standard deviation
     def normalize_matrix(self, input_mat):
-        eps = 1e-7
+        eps = 1e-3
         return (input_mat - self.avg_mat) / (self.std_mat + eps)
 
     # Denormalize the current matrix with the average and the std
     def denormalize_matrix(self, input_mat):
-        eps = 1e-7
+        eps = 1e-3
         return input_mat * (self.std_mat + eps) + self.avg_mat
