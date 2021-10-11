@@ -109,6 +109,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     user_data = {'curr_idx': 0, 'window_len': args.window_len}
-    user_data['mat_model_list'] = [model(int(args.num_node[i]), args.num_sensor, 2, 10, 1e-4, 1) for i in range(args.num_channel)]
+    user_data['mat_model_list'] = [model(int(args.num_node[i]), args.num_sensor, 2, 1000, 1e-4, 3) for i in range(args.num_channel)]
     user_data['data_stream_list'] = [data(int(args.num_node[i]), args.num_sensor, args.window_len) for i in range(args.num_channel)]
     main(args.host, args.port, user_data)
